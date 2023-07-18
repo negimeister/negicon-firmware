@@ -63,7 +63,7 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 /* USER CODE BEGIN EV */
-
+extern UART_HandleTypeDef* log_uart;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -284,7 +284,7 @@ void DMA2_Stream5_IRQHandler(void)
   /* USER CODE END DMA2_Stream5_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA2_Stream5_IRQn 1 */
-
+  
   /* USER CODE END DMA2_Stream5_IRQn 1 */
 }
 
@@ -298,7 +298,7 @@ void DMA2_Stream7_IRQHandler(void)
   /* USER CODE END DMA2_Stream7_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_tx);
   /* USER CODE BEGIN DMA2_Stream7_IRQn 1 */
-
+  log_uart->gState = HAL_UART_STATE_READY;
   /* USER CODE END DMA2_Stream7_IRQn 1 */
 }
 

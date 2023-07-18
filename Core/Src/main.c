@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -79,11 +80,24 @@ static void MX_TIM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
 
+
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t uart_rxbuf[32];
+uint8_t uart_rx_ptr = 0;
 
 /* USER CODE END 0 */
 
@@ -126,13 +140,27 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+    memset(uart_rxbuf, 0xff, sizeof(uart_rxbuf));
+    //INFO("setup inputs. dmaschtuff")
+    HAL_UART_Receive_DMA(&huart1, uart_rxbuf, sizeof(uart_rxbuf));
+    
   while (1)
   {
+      if(uart_rxbuf[uart_rx_ptr] != 0x0){
+        uint8_t res = uart_rxbuf[uart_rx_ptr];
+        uart_rxbuf[uart_rx_ptr] = 0x0;
+        uart_rx_ptr++;
+        printf("in1: %hx\r\n", res);
+        uart_rx_ptr %= sizeof(uart_rxbuf);
+      }
+
+
+    flush();
+//    HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
